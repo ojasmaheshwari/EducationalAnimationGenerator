@@ -1,7 +1,8 @@
 const { v4: uuidv4 } = require('uuid');
-const { writeFile } = require('fs/promises');
+const { writeFile, mkdir } = require('fs/promises');
 const { exec } = require('child_process');
 const { promisify } = require('util');
+const path = require('path');
 
 const execAsync = promisify(exec);
 
@@ -136,7 +137,11 @@ Generate the complete Python code now:
   console.log("Generated Manim Code:\n", code);
 
   const filename = `code_${sceneName}.py`;
-  const filepath = `src/codes/${filename}`;
+  const codesDir = path.join('src', 'codes');
+  const filepath = path.join(codesDir, filename);
+
+  // Ensure codes directory exists
+  await mkdir(codesDir, { recursive: true });
 
   // Retry loop for error correction
   let lastError = null;
