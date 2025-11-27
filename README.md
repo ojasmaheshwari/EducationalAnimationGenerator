@@ -17,3 +17,21 @@ If the generated script fails during compilation, the system captures the error 
 Once a valid script is produced, Manim renders the final animation.
 
 The completed animation is delivered back to the user through the interface.
+
+# Installation
+
+- Clone the repository
+- sh install.sh
+- cd backend
+- npm i
+- cp .env.example .env
+- copy your gemini api key into LLM_API_KEY variable in .env
+- cd ../frontend
+- npm i
+- npm run dev
+
+In new terminal
+- cd backend
+- npm run dev
+
+Visit http://localhost:5173
