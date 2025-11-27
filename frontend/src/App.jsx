@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { Film, Sparkles } from 'lucide-react';
-
 
 export default function FrameForge() {
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedVideo, setGeneratedVideo] = useState(null);
 
   const handleGenerate = () => {
     if (!prompt.trim()) return;
@@ -13,8 +12,12 @@ export default function FrameForge() {
     
     setTimeout(() => {
       setIsGenerating(false);
-      alert('Video generation started! You will be notified when complete.');
-    }, 2000);
+      // Simulate generated video - replace with your actual API response
+      setGeneratedVideo({
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        prompt: prompt
+      });
+    }, 3000);
   };
 
   return (
@@ -70,6 +73,36 @@ export default function FrameForge() {
             )}
           </button>
         </div>
+
+        {/* Video Output Section */}
+        {generatedVideo && (
+          <div className="mt-8 bg-zinc-900 border border-cyan-900/30 rounded-lg p-8">
+            <h3 className="text-xl font-semibold mb-4">Generated Video</h3>
+            
+            <div className="bg-black rounded-lg overflow-hidden">
+              <video
+                src={generatedVideo.url}
+                controls
+                className="w-full"
+                autoPlay
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
+
+            <div className="mt-4 p-4 bg-black/50 rounded-lg">
+              <p className="text-sm text-cyan-600 mb-1">Prompt Used:</p>
+              <p className="text-cyan-400">{generatedVideo.prompt}</p>
+            </div>
+
+            <button
+              onClick={() => setGeneratedVideo(null)}
+              className="mt-4 px-6 py-2 bg-zinc-800 text-cyan-400 rounded-lg hover:bg-zinc-700 transition-all"
+            >
+              Generate Another Video
+            </button>
+          </div>
+        )}
 
         {/* Info Footer */}
         <div className="mt-16 text-center text-cyan-800 text-sm">
