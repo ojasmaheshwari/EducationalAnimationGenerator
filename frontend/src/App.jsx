@@ -1,23 +1,40 @@
 import React, { useState } from 'react';
 import { Film, Sparkles } from 'lucide-react';
+import { BACKEND_URL } from './config/config';
 
 export default function FrameForge() {
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedVideo, setGeneratedVideo] = useState(null);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!prompt.trim()) return;
     setIsGenerating(true);
-    
-    setTimeout(() => {
-      setIsGenerating(false);
-      // Simulate generated video - replace with your actual API response
+
+    const payload = {
+      description: prompt
+    }
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/render`, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+      const data = await res.json();
+
       setGeneratedVideo({
-        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        url: data.status == "success" ? `${BACKEND_URL}/video/${data.videoLink}` : data.videoLink,
         prompt: prompt
-      });
-    }, 3000);
+      }, 1000)
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsGenerating(false);
+    }
+
   };
 
   return (
@@ -46,7 +63,7 @@ export default function FrameForge() {
           <label className="block text-sm font-medium mb-3">
             Enter Your Prompt
           </label>
-          
+
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
@@ -57,11 +74,10 @@ export default function FrameForge() {
           <button
             onClick={handleGenerate}
             disabled={!prompt.trim() || isGenerating}
-            className={`w-full mt-6 py-4 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-all ${
-              !prompt.trim() || isGenerating
-                ? 'bg-zinc-800 text-cyan-900 cursor-not-allowed'
-                : 'bg-cyan-600 text-black hover:bg-cyan-500'
-            }`}
+            className={`w-full mt-6 py-4 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-all ${!prompt.trim() || isGenerating
+              ? 'bg-zinc-800 text-cyan-900 cursor-not-allowed'
+              : 'bg-cyan-600 text-black hover:bg-cyan-500'
+              }`}
           >
             {isGenerating ? (
               <>
@@ -78,10 +94,10 @@ export default function FrameForge() {
         {generatedVideo && (
           <div className="mt-8 bg-zinc-900 border border-cyan-900/30 rounded-lg p-8">
             <h3 className="text-xl font-semibold mb-4">Generated Video</h3>
-            
+
             <div className="bg-black rounded-lg overflow-hidden">
               <video
-                src={generatedVideo.url}
+                src={generatedVideo?.url || ""}
                 controls
                 className="w-full"
                 autoPlay
@@ -92,7 +108,7 @@ export default function FrameForge() {
 
             <div className="mt-4 p-4 bg-black/50 rounded-lg">
               <p className="text-sm text-cyan-600 mb-1">Prompt Used:</p>
-              <p className="text-cyan-400">{generatedVideo.prompt}</p>
+              <p className="text-cyan-400">{generatedVideo?.prompt || ""}</p>
             </div>
 
             <button

@@ -3,6 +3,7 @@ const render = require('./controllers/render.controller')
 const app = express()
 const cors = require('cors')
 const path = require('path');
+const fs = require('fs')
 
 require('dotenv').config()
 
@@ -16,6 +17,7 @@ app.use(
     credentials: true
   })
 );
+
 
 app.get('/', (req, res) => {
     res.json({message : "OK"});
@@ -34,6 +36,29 @@ app.post('/render', async (req, res) => {
 
     return res.status(200).json(result);
 })
+
+app.get('/video/:videoId', (req, res) => {
+  const { videoId } = req.params;
+  // Scene name uses underscores instead of hyphens for valid Python class names
+  const sceneSuffix = videoId.replace(/-/g, '_');
+
+  const basePath = path.join(
+    process.cwd(),
+    'media',
+    'videos',
+    `code_MyBeautifulScene_${sceneSuffix}`,
+    '480p15',
+    `MyBeautifulScene_${sceneSuffix}.mp4`
+  );
+
+  fs.access(basePath, fs.constants.F_OK, err => {
+    if (err) {
+      return res.status(404).send('Video not found');
+    }
+
+    res.sendFile(basePath);
+  });
+});
 
 
 app.listen(process.env.PORT, () => {
