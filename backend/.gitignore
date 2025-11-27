@@ -3,6 +3,6 @@ node_modules
 package-lock.json
 src/media
 src/__pycache__
-src/codes
+src/codes/*
 src/.venv
 media
